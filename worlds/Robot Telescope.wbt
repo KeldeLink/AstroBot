@@ -1,0 +1,405 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+
+WorldInfo {
+  info [
+    "Example use of the Encoders of a Robot robot."
+  ]
+  title "Goto Telescope"
+  gpsCoordinateSystem "WGS84"
+}
+Viewpoint {
+  orientation 0.23686935567776923 -0.4099837414283706 -0.880798637660841 5.079650271943397
+  position -0.3779097349397614 -0.7023938409385134 0.473112717364914
+  follow "solid"
+  followType "None"
+}
+TexturedBackgroundLight {
+  texture "dawn_cloudy_empty"
+  luminosity 0.2
+}
+Robot {
+  translation 0.000559952 -0.129999 0.01
+  rotation 0 0 1 0.785398
+  children [
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+      }
+      device [
+        PositionSensor {
+          name "azimuth sensor"
+          noise 0.0001
+          resolution 6.1e-05
+        }
+        RotationalMotor {
+          name "azimuth motor"
+          acceleration 50
+          controlPID 10 0 0.1
+          minPosition -1000
+          maxPosition 1000
+          maxTorque 50
+        }
+      ]
+      endPoint Solid {
+        translation 0 0 0.049999999999999385
+        rotation 0 0 -1 0.7369111729578417
+        children [
+          Compass {
+            translation 0 0 0.04
+            rotation 0 1 0 0
+            resolution 1e-06
+          }
+          HingeJoint {
+            jointParameters HingeJointParameters {
+              position -0.8587642142288768
+              axis 0 1 0
+              anchor 0.001 -0.02 0.02
+              suspensionAxis 0 1 0
+            }
+            device [
+              PositionSensor {
+                name "altitude sensor"
+                noise 0.0001
+                resolution 0.0003835
+              }
+              RotationalMotor {
+                name "altitude motor"
+                acceleration 50
+                controlPID 20 0 0
+                maxTorque 2
+              }
+            ]
+            endPoint Solid {
+              translation 0.001 -0.02 0.02
+              rotation 0 -0.9999999999999999 0 1.570795307179585
+              children [
+                InertialUnit {
+                  noise 0.0001
+                  resolution 0.0039
+                }
+                DEF ALTITUDE Pose {
+                  rotation 0 1 0 0
+                  children [
+                    Camera {
+                      translation -7.54259e-08 0 -0.048
+                      rotation 0 1 0 1.5708
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.666667 0 0
+                            }
+                          }
+                          geometry Box {
+                            size 0.008 0.008 0.008
+                          }
+                        }
+                      ]
+                      fieldOfView 0.18
+                      width 3008
+                      height 3008
+                      near 0.1
+                      antiAliasing TRUE
+                      motionBlur 0.05
+                      noise 0.005
+                      lens Lens {
+                        radialCoefficients 0.005 0
+                      }
+                      zoom Zoom {
+                      }
+                      recognition Recognition {
+                      }
+                      lensFlare LensFlare {
+                      }
+                    }
+                    DEF Repere Pose {
+                      translation 0 0 -0.05
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.333333 0 0.498039
+                            }
+                          }
+                          geometry Sphere {
+                            radius 0.008
+                          }
+                        }
+                      ]
+                    }
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0 1 1
+                        }
+                      }
+                      geometry Cylinder {
+                        height 0.1
+                        radius 0.02
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "altitude base"
+            }
+          }
+          DEF AZIMUTH Pose {
+            children [
+              Shape {
+                appearance Appearance {
+                }
+                geometry Cylinder {
+                  height 0.08
+                  radius 0.01
+                }
+              }
+            ]
+          }
+        ]
+        name "azimuth_base"
+      }
+    }
+    Pose {
+      children [
+        Shape {
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.333333 0.333333 0.498039
+            }
+            texture ImageTexture {
+            }
+          }
+          geometry Cylinder {
+            height 0.025
+            radius 0.05
+          }
+        }
+      ]
+    }
+  ]
+  name "GoTo"
+  controller "GoTo2-cameraTrack"
+  supervisor TRUE
+}
+Robot {
+  translation 0.226 0.31873 0.0183809
+  rotation 0.08185357475069645 -0.009761894307732005 0.9965965571484063 2.5363804866225492
+  children [
+    Pose {
+      translation 0 0 0.0415
+      rotation 0 0 1 -1.570796
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.0820075 0.364731 0.8
+            roughness 1
+            metalness 0
+          }
+          geometry DEF BODY Cylinder {
+            height 0.08
+            radius 0.045
+          }
+        }
+      ]
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position 2023.8968225292244
+        axis 0 1 0
+        anchor 0 0 0.025
+      }
+      device [
+        RotationalMotor {
+          name "left wheel motor"
+          consumptionFactor 70
+        }
+        PositionSensor {
+          name "left wheel sensor"
+          noise 0.0001
+          resolution 0.0003835
+        }
+      ]
+      endPoint Solid {
+        translation 0.009052292029041413 0.04499999999999996 0.02075082155339962
+        rotation -0.2126989016741644 0.21269899112614687 -0.9536866971917579 1.6181983836528582
+        children [
+          DEF WHEEL Pose {
+            rotation 0.577656895078166 0.5771968951617173 -0.5771968951617173 -2.093935
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 1 0 0
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.025
+                }
+              }
+            ]
+          }
+        ]
+        name "left wheel"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position -1958.5198503182874
+        axis 0 1 0
+        anchor 0 0 0.025
+      }
+      device [
+        RotationalMotor {
+          name "right wheel motor"
+          consumptionFactor 70
+        }
+        PositionSensor {
+          name "right wheel sensor"
+          noise 0.0001
+          resolution 0.0003835
+        }
+      ]
+      endPoint Solid {
+        translation 0 -0.04499999999999911 0.025
+        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
+        children [
+          USE WHEEL
+        ]
+        name "right wheel"
+        boundingObject USE WHEEL
+        physics USE PHYSICS_WHEEL
+      }
+    }
+    Pose {
+      translation 0.0385 -0.02 0.063
+      rotation -0.7268278184260777 -0.4856548786751704 -0.4856548786751704 -1.884582
+      children [
+        DEF UNUSED_EYE Group {
+          children [
+            Pose {
+              translation 1e-05 0 0
+              rotation 0 0 1 0.8
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.975691 0.981481 0.0252992
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Box {
+                    size 0.005 0.02 0.005
+                  }
+                }
+              ]
+            }
+            Pose {
+              rotation 0 0 1 -0.8
+              children [
+                Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.975691 0.981481 0.0252992
+                    roughness 1
+                    metalness 0
+                  }
+                  geometry Box {
+                    size 0.005 0.02 0.005
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    Pose {
+      translation 0.0385 0.02 0.063
+      rotation -0.7268313515069925 0.4856522348690052 0.4856522348690052 -1.884578
+      children [
+        USE UNUSED_EYE
+      ]
+    }
+    DEF SMILE Pose {
+      translation 0.036 0 0.025
+      rotation 0.25056300542381216 -0.9351130202419243 -0.25056300542381216 1.637834
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.721569 0.290196 0.290196
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.018
+            radius 0.009
+            subdivision 3
+          }
+        }
+      ]
+    }
+  ]
+  name "MyBot"
+  boundingObject Pose {
+    translation 0 0 0.0415
+    rotation 0 0 1 -1.570796
+    children [
+      USE BODY
+    ]
+  }
+  physics Physics {
+    density -1
+    mass 0.5
+  }
+  controller "encoders"
+}
+Floor {
+  size 1 1
+}
+DEF Stars Transform {
+  scale -1 1 1
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 0
+        roughness 1
+        emissiveColor 1 1 1
+        emissiveColorMap ImageTexture {
+          url [
+            "../textures/2010076265_Pelicanv6.jpg.3d86198b9ad90a168290ae5c9033dd7d.jpg"
+          ]
+        }
+      }
+      geometry Sphere {
+        radius 1000
+        subdivision 5
+      }
+      castShadows FALSE
+    }
+  ]
+}
+DEF TARGET_SPHERE Solid {
+  translation 0 0 0.87
+  children [
+    Shape {
+      appearance PBRAppearance {
+        emissiveColor 1 0.333333 0
+      }
+      geometry Sphere {
+        radius 0.3
+        subdivision 5
+      }
+    }
+  ]
+  recognitionColors [
+    1 1 0
+  ]
+}
