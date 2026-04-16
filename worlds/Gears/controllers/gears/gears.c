@@ -21,6 +21,9 @@
 #include <webots/motor.h>
 #include <webots/position_sensor.h>
 #include <webots/robot.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h> // Indispensable pour la fonction fmod()
 
 #define TIME_STEP 8
 
@@ -32,13 +35,19 @@ int main(int argc, char **argv) {
   wb_motor_set_velocity(motor, 0.2);
 
   WbDeviceTag sensor = wb_robot_get_device("position sensor");
+  WbDeviceTag sensor2 = wb_robot_get_device("position sensor2");
   wb_position_sensor_enable(sensor, TIME_STEP);
+  wb_position_sensor_enable(sensor2, TIME_STEP);
 
   while (wb_robot_step(TIME_STEP) != -1) {
-    float pos = wb_position_sensor_get_value(sensor);
-
-    wb_motor_set_velocity(motor,2);
+    //float pos = wb_position_sensor_get_value(sensor);
+    float pos2 = wb_position_sensor_get_value(sensor2);
+    printf("Angle -> L: %8.4f deg", pos2);
+    
+    wb_motor_set_velocity(motor,0.5);
     //print("f{pos}");
+    
+    
      
    
 }

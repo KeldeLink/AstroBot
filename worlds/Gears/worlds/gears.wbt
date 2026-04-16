@@ -12,8 +12,8 @@ WorldInfo {
   basicTimeStep 8
 }
 Viewpoint {
-  orientation 0.23278859217604628 0.2022836913726661 0.9512574727997369 4.5230995010799475
-  position -0.000711067649379539 0.2984160027654809 -0.15122698036356375
+  orientation 0.05116609449418922 0.04897515518018283 0.9974885788565645 4.666126947259656
+  position -0.027806762208029065 0.5177016422797439 -0.05623090987692434
 }
 TexturedBackground {
   texture "empty_office"
@@ -25,6 +25,7 @@ Robot {
   children [
     DEF MOTORIZED HingeJoint {
       jointParameters HingeJointParameters {
+        anchor 0 -0.03 0
       }
       device [
         PositionSensor {
@@ -33,22 +34,23 @@ Robot {
         }
       ]
       endPoint Gear {
-        translation 0 0 0
-        rotation 1 0 0 0
+        translation 0 -0.03 0
+        rotation 1 0 0 0.9162986938995744
         appearance PBRAppearance {
           baseColor 0.8 0 0
           roughness 0.5
         }
         teeth 30
+        pitchRadius 0.07
         toothDepth 0.007
-        density 0.01
+        density 50
         bodyBoundingObject FALSE
         teethBoundingObject TRUE
       }
     }
     DEF PASSIVE HingeJoint {
       jointParameters HingeJointParameters {
-        anchor 0 0.086 0
+        anchor 0 0.083 0.01
         dampingConstant 1e-08
       }
       device [
@@ -57,21 +59,24 @@ Robot {
         }
       ]
       endPoint Gear {
-        translation 0 0.086 0
+        translation 0 0.083 0.01
         rotation 1 0 0 0
         appearance PBRAppearance {
           baseColor 0.203922 0.396078 0.643137
           roughness 0.5
         }
         name "gear2"
-        teeth 36
-        toothDepth 0.005
-        density 0.01
+        teeth 30
+        width 0.02
+        innerRadius 0.03
+        pitchRadius 0.01
+        toothDepth 0.003
+        density 50
         bodyBoundingObject FALSE
         teethBoundingObject TRUE
       }
     }
   ]
-  controller "gears"
+  controller "gears2"
   selfCollision TRUE
 }
