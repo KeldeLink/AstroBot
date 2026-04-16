@@ -7,7 +7,7 @@ import astropy.units as u
 # ==========================================
 # CONFIGURATION
 # ==========================================
-TARGET_BODY = "jupiter" 
+TARGET_BODY = "uranus" 
 LOCATION = EarthLocation(lat=48.5720219, lon=7.766944, height=35*u.m)
 
 SENS_AZ = 1      
@@ -137,7 +137,7 @@ while robot.step(timestep) != -1:
         
         prev_errs_t["az"], prev_errs_t["alt"] = err_az, err_alt
 
-        if (temps_simu - debut_tracking_astro) > 30.0:
+        if (temps_simu - debut_tracking_astro) > 20.0:
             state = "TRACKING_VISUEL"
 
     # ==========================================

@@ -12,8 +12,8 @@ WorldInfo {
   basicTimeStep 8
 }
 Viewpoint {
-  orientation 0 0 1 4.71238898038469
-  position -0.041748615977272176 0.27118552471245 -0.0005254140023221207
+  orientation 0.23278859217604628 0.2022836913726661 0.9512574727997369 4.5230995010799475
+  position -0.000711067649379539 0.2984160027654809 -0.15122698036356375
 }
 TexturedBackground {
   texture "empty_office"
@@ -34,11 +34,12 @@ Robot {
       ]
       endPoint Gear {
         translation 0 0 0
+        rotation 1 0 0 0
         appearance PBRAppearance {
           baseColor 0.8 0 0
           roughness 0.5
         }
-        teeth 20
+        teeth 30
         toothDepth 0.007
         density 0.01
         bodyBoundingObject FALSE
@@ -47,19 +48,24 @@ Robot {
     }
     DEF PASSIVE HingeJoint {
       jointParameters HingeJointParameters {
-        anchor 0 0.083 0
+        anchor 0 0.086 0
         dampingConstant 1e-08
       }
+      device [
+        PositionSensor {
+          name "position sensor2"
+        }
+      ]
       endPoint Gear {
-        translation 0 0.083 0
-        rotation 1 0 0 0.261799
+        translation 0 0.086 0
+        rotation 1 0 0 0
         appearance PBRAppearance {
           baseColor 0.203922 0.396078 0.643137
           roughness 0.5
         }
         name "gear2"
-        teeth 20
-        toothDepth 0.007
+        teeth 36
+        toothDepth 0.005
         density 0.01
         bodyBoundingObject FALSE
         teethBoundingObject TRUE

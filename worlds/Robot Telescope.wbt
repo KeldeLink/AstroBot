@@ -11,8 +11,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation 0.0956943502728023 -0.9747938653103908 -0.20154282790288938 5.278026289482403
-  position -0.47250324217424783 -0.2316973100162734 0.703456824713818
+  orientation 0.11637922224650071 -0.8198603819099827 -0.5606111226186269 5.709776547437681
+  position -0.3289936632293333 -0.26584827367114894 0.2780518148366721
   follow "solid"
   followType "None"
 }
@@ -31,8 +31,8 @@ Robot {
       device [
         PositionSensor {
           name "azimuth sensor"
-          noise 0.0001
-          resolution 6.1e-05
+          noise 0.00087266
+          resolution 0.00087266
         }
         RotationalMotor {
           name "azimuth motor"
@@ -62,8 +62,8 @@ Robot {
             device [
               PositionSensor {
                 name "altitude sensor"
-                noise 0.0001
-                resolution 0.0003835
+                noise 0.0010472
+                resolution 0.00087266
               }
               RotationalMotor {
                 name "altitude motor"
@@ -271,7 +271,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 -0.04499999999999911 0.025
-        rotation -0.6387696224695875 0.6387695681696735 -0.4288902052861425 2.331270590752793
+        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
         children [
           USE WHEEL
         ]
@@ -360,6 +360,7 @@ Robot {
     mass 0.5
   }
   controller "encoders"
+  window "generic_window"
 }
 Floor {
   size 1 1

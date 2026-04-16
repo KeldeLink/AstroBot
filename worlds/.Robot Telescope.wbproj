@@ -7,7 +7,7 @@ centralWidgetVisible: 1
 projectionMode: PERSPECTIVE
 renderingMode: PLAIN
 orthographicViewHeight: 1
-textFiles: 3 "../../../../../../Users/willi/Documents/Webots Projects/controllers/camera/camera.py" "../../../../../../Users/willi/Documents/Webots Projects/controllers/stepper_motor/stepper_motor.py" "../../../../../../Users/willi/Documents/Webots Projects/controllers/TARGET/TARGET.py" "../../../../../../Users/willi/Documents/Webots Projects/controllers/GoTo2-cameraTrack/GoTo2-cameraTrack.py" "../../../../../../Users/willi/Documents/Webots Projects/controllers/GoTo1/GoTo1.py"
+textFiles: 1 "controllers/camera/camera.py" "controllers/stepper_motor/stepper_motor.py" "controllers/TARGET/TARGET.py" "controllers/GoTo2-cameraTrack/GoTo2-cameraTrack.py" "controllers/GoTo1/GoTo1.py"
 globalOptionalRendering: JointAxes::CoordinateSystem::CameraFrustums
 consoles: Console:All:All
-renderingDevicePerspectives: GoTo:camera;1;0.09375;0;0.00161757
+renderingDevicePerspectives: GoTo:camera;1;0.101396;0;0.00161757

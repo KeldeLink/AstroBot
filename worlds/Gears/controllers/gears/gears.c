@@ -35,14 +35,13 @@ int main(int argc, char **argv) {
   wb_position_sensor_enable(sensor, TIME_STEP);
 
   while (wb_robot_step(TIME_STEP) != -1) {
-    double pos = wb_position_sensor_get_value(sensor);
+    float pos = wb_position_sensor_get_value(sensor);
 
-    if (pos >= M_PI / 4)
-      wb_motor_set_velocity(motor, -0.8);
-    if (pos <= -M_PI / 4)
-      wb_motor_set_velocity(motor, 0.8);
-  }
-
+    wb_motor_set_velocity(motor,2);
+    //print("f{pos}");
+     
+   
+}
   wb_robot_cleanup();
 
   return 0;
