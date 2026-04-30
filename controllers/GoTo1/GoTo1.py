@@ -4,18 +4,15 @@ from astropy.coordinates import get_body, AltAz, EarthLocation
 from astropy.time import Time
 import astropy.units as u
 
-# ==========================================
-# CONFIGURATION
-# ==========================================
-TARGET_BODY = "sun" 
-LOCATION = EarthLocation(lat=48.5720219, lon=7.766944, height=35*u.m)
+ASTRE_CIBLE = "sun" 
+EMPLACEMENT = EarthLocation(lat=48.5720219, lon=7.766944, height=35*u.m)
 
-# Sens moteurs (à ajuster selon la mécanique)
-SENS_AZ = 1    
-SENS_ALT = -1   
+# Sens des moteurs
+SENS_AZIMUT = 1    
+SENS_ALTITUDE = -1   
 
 # Gains PID
-Kp_h, Ki_h, Kd_h = 3.5, 0.02, 0.15
+Kp_init, Ki_init, Kd_init = 3.5, 0.02, 0.15
 Kp_az, Ki_az, Kd_az = 1.5, 0.01, 0.1
 Kp_alt, Ki_alt, Kd_alt = 5, 0.02, 0.2
 
@@ -23,136 +20,136 @@ Kp_alt, Ki_alt, Kd_alt = 5, 0.02, 0.2
 # INITIALISATION
 # ==========================================
 robot = Supervisor()
-timestep = int(robot.getBasicTimeStep())
+pas_de_temps = int(robot.getBasicTimeStep())
 
-az_motor = robot.getDevice("azimuth motor")
-alt_motor = robot.getDevice("altitude motor")
-az_sensor = robot.getDevice("azimuth sensor")
-alt_sensor = robot.getDevice("altitude sensor")
-imu = robot.getDevice("inertial unit")
+moteur_az = robot.getDevice("azimuth motor")
+moteur_alt = robot.getDevice("altitude motor")
+capteur_az = robot.getDevice("azimuth sensor")
+capteur_alt = robot.getDevice("altitude sensor")
+centrale_inertielle = robot.getDevice("inertial unit")
 
-for m in [az_motor, alt_motor]:
+for m in [moteur_az, moteur_alt]:
     m.setPosition(float('inf'))
     m.setVelocity(0.0)
 
-for s in [az_sensor, alt_sensor, imu]:
-    s.enable(timestep)
+for s in [capteur_az, capteur_alt, centrale_inertielle]:
+    s.enable(pas_de_temps)
 
-cam = robot.getDevice("camera")
-cam.enable(timestep)
+camera = robot.getDevice("camera")
+camera.enable(pas_de_temps)
 
 # Variables d'état
-state = "HOMING_AZ" 
+etat = "RECHERCHE_NORD" 
 offset_enc_az = offset_enc_alt = 0
-integral_h = prev_error_h = 0
-target_az_h = 0.0  # On cherche le Nord (0°)
+integrale_init = erreur_precedente_init = 0
+cible_az_init = 0.0  # On cherche le Nord (0°)
 
-integrals_t = {"az": 0, "alt": 0}
-prev_errs_t = {"az": 0, "alt": 0}
+integrales_suivi = {"az": 0, "alt": 0}
+erreurs_prec_suivi = {"az": 0, "alt": 0}
 
-target_node = robot.getFromDef("TARGET_SPHERE")
-self_node = robot.getSelf() 
-distance_affichage = 30
+noeud_cible = robot.getFromDef("TARGET_SPHERE")
+noeud_robot = robot.getSelf() 
+distance_visuelle = 30
 
 print("--- RECHERCHE DU NORD (+X) ---")
 
-while robot.step(timestep) != -1:
-    now = Time.now()
-    dt = timestep / 1000.0
-    temps_ecoule = robot.getTime()
+while robot.step(pas_de_temps) != -1:
+    maintenant = Time.now()
+    dt = pas_de_temps / 1000.0
+    temps_simu = robot.getTime()
 
-    enc_az = math.degrees(az_sensor.getValue())
-    enc_alt = math.degrees(alt_sensor.getValue())
+    # Lecture des encodeurs en degrés
+    enc_az = math.degrees(capteur_az.getValue())
+    enc_alt = math.degrees(capteur_alt.getValue())
 
     # ==========================================
-    # PHASE 1 : HOMING (PID + IMU)
+    # PHASE 1 : RECHERCHE DU NORD (PID + IMU)
     # ==========================================
-    if state == "HOMING_AZ":
-        rpy = imu.getRollPitchYaw()
+    if etat == "RECHERCHE_NORD":
+        rpy = centrale_inertielle.getRollPitchYaw()
         if math.isnan(rpy[0]): continue
 
-        current_az_imu = math.degrees(rpy[2]) # Yaw
-        error = target_az_h - current_az_imu
+        azimut_actuel_imu = math.degrees(rpy[2]) # Lacet (Yaw)
+        erreur = cible_az_init - azimut_actuel_imu
         
-        if error > 180: error -= 360
-        elif error < -180: error += 360
+        # Gestion du passage 180/-180
+        if erreur > 180: erreur -= 360
+        elif erreur < -180: erreur += 360
 
-        integral_h += error * dt
-        derivative = (error - prev_error_h) / dt
-        output = (Kp_h * error) + (Ki_h * integral_h) + (Kd_h * derivative)
+        integrale_init += erreur * dt
+        derivee = (erreur - erreur_precedente_init) / dt
+        sortie_pid = (Kp_init * erreur) + (Ki_init * integrale_init) + (Kd_init * derivee)
         
-        vitesse = max(min(math.radians(output), 2.0), -2.0)
-        az_motor.setVelocity(vitesse * SENS_AZ)
-        prev_error_h = error
+        vitesse = max(min(math.radians(sortie_pid), 2.0), -2.0)
+        moteur_az.setVelocity(vitesse * SENS_AZIMUT)
+        erreur_precedente_init = erreur
 
-        if temps_ecoule % 0.5 < dt:
-            print(f"HOMING | Nord (+X) | IMU: {current_az_imu:>7.2f}° | Err: {error:>8.3f}°")
+        if temps_simu % 0.5 < dt:
+            print(f"INITIALISATION | Nord (+X) | IMU: {azimut_actuel_imu:>7.2f}° | Err: {erreur:>8.3f}°")
 
-        if (abs(error) < 0.05 and abs(vitesse) < 0.01) or temps_ecoule > 15.0:
-            az_motor.setVelocity(0)
-            offset_enc_az = enc_az - (current_az_imu / SENS_AZ)
+        # Si on est stable ou que le temps est écoulé
+        if (abs(erreur) < 0.05 and abs(vitesse) < 0.01) or temps_simu > 15.0:
+            moteur_az.setVelocity(0)
+            offset_enc_az = enc_az - (azimut_actuel_imu / SENS_AZIMUT)
             offset_enc_alt = enc_alt 
-            state = "TRACKING"
-            print("\n--- BASCULE EN MODE TRACKING ---\n")
+            etat = "SUIVI_ASTRE"
+            print("\n--- BASCULE EN MODE SUIVI ---\n")
 
     # ==========================================
-    # PHASE 2 : TRACKING (PID + ENCODEURS)
+    # PHASE 2 : SUIVI (PID + ENCODEURS)
     # ==========================================
-    elif state == "TRACKING":
-        current_az = ((enc_az - offset_enc_az) * SENS_AZ) % 360.0
-        current_alt = (enc_alt - offset_enc_alt) * SENS_ALT
+    elif etat == "SUIVI_ASTRE":
+        azimut_actuel = ((enc_az - offset_enc_az) * SENS_AZIMUT) % 360.0
+        altitude_actuelle = (enc_alt - offset_enc_alt) * SENS_ALTITUDE
 
-        # Cible Astropy
+        # Calcul de la position de l'astre avec Astropy
         with u.set_enabled_equivalencies(u.dimensionless_angles()):
-            body = get_body(TARGET_BODY, now, LOCATION)
-            altaz = body.transform_to(AltAz(obstime=now, location=LOCATION))
-            target_az = altaz.az.deg
-            target_alt = altaz.alt.deg
+            corps = get_body(ASTRE_CIBLE, maintenant, EMPLACEMENT)
+            coordonnees = corps.transform_to(AltAz(obstime=maintenant, location=EMPLACEMENT))
+            cible_az = coordonnees.az.deg
+            cible_alt = coordonnees.alt.deg
 
-        # Calcul des erreurs
-        err_az = target_az - current_az
+        # Calcul des erreurs de suivi
+        err_az = cible_az - azimut_actuel
         if err_az > 180: err_az -= 360
         elif err_az < -180: err_az += 360
-        err_alt = target_alt - current_alt
+        err_alt = cible_alt - altitude_actuelle
 
         # PID Azimut
-        integrals_t["az"] += err_az * dt
-        v_az = (Kp_az * err_az) + (Ki_az * integrals_t["az"]) + (Kd_az * (err_az - prev_errs_t["az"])/dt)
+        integrales_suivi["az"] += err_az * dt
+        v_az = (Kp_az * err_az) + (Ki_az * integrales_suivi["az"]) + (Kd_az * (err_az - erreurs_prec_suivi["az"])/dt)
         
         # PID Altitude
-        integrals_t["alt"] += err_alt * dt
-        v_alt = (Kp_alt * err_alt) + (Ki_alt * integrals_t["alt"]) + (Kd_alt * (err_alt - prev_errs_t["alt"])/dt)
+        integrales_suivi["alt"] += err_alt * dt
+        v_alt = (Kp_alt * err_alt) + (Ki_alt * integrales_suivi["alt"]) + (Kd_alt * (err_alt - erreurs_prec_suivi["alt"])/dt)
 
-        az_motor.setVelocity(max(min(math.radians(v_az), 2.0), -2.0) * SENS_AZ)
-        alt_motor.setVelocity(max(min(math.radians(v_alt), 1.5), -1.5) * SENS_ALT)
+        moteur_az.setVelocity(max(min(math.radians(v_az), 2.0), -2.0) * SENS_AZIMUT)
+        moteur_alt.setVelocity(max(min(math.radians(v_alt), 1.5), -1.5) * SENS_ALTITUDE)
         
-        prev_errs_t["az"], prev_errs_t["alt"] = err_az, err_alt
+        erreurs_prec_suivi["az"], erreurs_prec_suivi["alt"] = err_az, err_alt
 
         # ==========================================
-        # MISE À JOUR DE LA SPHÈRE (REPERE ROBOT)
+        # MISE À JOUR DE LA SPHÈRE VISUELLE
         # ==========================================
-        if target_node and self_node:
-            az_rad = math.radians(target_az)
-            alt_rad = math.radians(target_alt)
+        if noeud_cible and noeud_robot:
+            az_rad = math.radians(cible_az)
+            alt_rad = math.radians(cible_alt)
             
-            # --- CONVERSION SELON TON GIZMO ---
-            # Nord = +X (Rouge) | Est = +Y (Vert) | Haut = +Z (Bleu)
-            x_rel = distance_affichage * math.cos(alt_rad) * math.cos(az_rad)
-            y_rel = distance_affichage * math.cos(alt_rad) * math.sin(az_rad)
-            z_rel = distance_affichage * math.sin(alt_rad)
+            # Nord = +X | Est = +Y | Haut = +Z
+            x_rel = distance_visuelle * math.cos(alt_rad) * math.cos(az_rad)
+            y_rel = distance_visuelle * math.cos(alt_rad) * math.sin(az_rad)
+            z_rel = distance_visuelle * math.sin(alt_rad)
             
-            # Position du robot
-            pos_robot = self_node.getField("translation").getSFVec3f()
+            pos_robot = noeud_robot.getField("translation").getSFVec3f()
             
-            # Mise à jour
-            target_node.getField("translation").setSFVec3f([
+            noeud_cible.getField("translation").setSFVec3f([
                 pos_robot[0] + x_rel,
                 pos_robot[1] + y_rel,
                 pos_robot[2] + z_rel
             ])
 
-        # Affichage
+        # Affichage console
         if robot.getTime() % 1.0 < dt:
-            print(f"[{TARGET_BODY.upper()}] Cible AZ: {target_az:.2f}° | ALT: {target_alt:.2f}°")
+            print(f"[{ASTRE_CIBLE.upper()}] Cible AZ: {cible_az:.2f}° | ALT: {cible_alt:.2f}°")
             print(f"Erreur -> AZ: {err_az:.3f}° | ALT: {err_alt:.3f}°")
             print("-" * 20)

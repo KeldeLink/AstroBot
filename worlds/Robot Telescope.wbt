@@ -2,17 +2,18 @@
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
 
 WorldInfo {
   info [
-    "Example use of the Encoders of a Robot robot."
+    ""
   ]
-  title "Goto Telescope"
+  title "Robot Telescope"
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation 0.11637922224650071 -0.8198603819099827 -0.5606111226186269 5.709776547437681
-  position -0.3289936632293333 -0.26584827367114894 0.2780518148366721
+  orientation -0.08537872721992226 -0.20338207423330013 0.9753697785039612 5.617538331941922
+  position -2933.2370684209764 3099.712379400613 229.32184889079883
   follow "solid"
   followType "None"
 }
@@ -181,7 +182,7 @@ Robot {
       ]
     }
   ]
-  name "GoTo"
+  name "RobotTelescope"
   controller "GoTo2-cameraTrack"
   supervisor TRUE
 }
@@ -271,7 +272,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 -0.04499999999999911 0.025
-        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
+        rotation -0.6387696224695875 0.6387695681696735 -0.4288902052861425 2.331270590752793
         children [
           USE WHEEL
         ]
@@ -364,8 +365,11 @@ Robot {
 }
 Floor {
   size 1 1
+  appearance Parquetry {
+    type "light strip"
+  }
 }
-DEF Stars Transform {
+DEF ciel_etoile Transform {
   scale -1 1 1
   children [
     Shape {

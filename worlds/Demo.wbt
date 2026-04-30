@@ -1,0 +1,183 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.07740613351822755 0.2115650311031684 -0.9742938612698293 0.825883320430922
+  position -0.8259379256615386 0.7469592797801949 0.3991094828448245
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+}
+Robot {
+  translation 0.000559952 -0.129999 0.01
+  rotation 0 0 1 0.785398
+  children [
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+      }
+      device [
+        PositionSensor {
+          name "azimuth sensor"
+          noise 0.00087266
+          resolution 0.00087266
+        }
+        RotationalMotor {
+          name "azimuth motor"
+          acceleration 50
+          controlPID 10 0 0.1
+          minPosition -1000
+          maxPosition 1000
+          maxTorque 50
+        }
+      ]
+      endPoint Solid {
+        translation 0 0 0.049999999999999385
+        rotation 0 0 -1 0.7369111729578417
+        children [
+          Compass {
+            translation 0 0 0.04
+            rotation 0 1 0 0
+            resolution 1e-06
+          }
+          HingeJoint {
+            jointParameters HingeJointParameters {
+              position -0.8587642142288768
+              axis 0 1 0
+              anchor 0.001 -0.02 0.02
+              suspensionAxis 0 1 0
+            }
+            device [
+              PositionSensor {
+                name "altitude sensor"
+                noise 0.0010472
+                resolution 0.00087266
+              }
+              RotationalMotor {
+                name "altitude motor"
+                acceleration 50
+                controlPID 20 0 0
+                maxTorque 2
+              }
+            ]
+            endPoint Solid {
+              translation 0.001 -0.02 0.02
+              rotation 0 -0.9999999999999999 0 1.570795307179585
+              children [
+                InertialUnit {
+                  noise 0.0001
+                  resolution 0.0039
+                }
+                DEF ALTITUDE Pose {
+                  rotation 0 1 0 0
+                  children [
+                    Camera {
+                      translation -7.54259e-08 0 -0.048
+                      rotation 0 1 0 1.5708
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.666667 0 0
+                            }
+                          }
+                          geometry Box {
+                            size 0.008 0.008 0.008
+                          }
+                        }
+                      ]
+                      fieldOfView 0.18
+                      width 3008
+                      height 3008
+                      near 0.1
+                      antiAliasing TRUE
+                      motionBlur 0.05
+                      noise 0.005
+                      lens Lens {
+                        radialCoefficients 0.005 0
+                      }
+                      zoom Zoom {
+                      }
+                      recognition Recognition {
+                      }
+                      lensFlare LensFlare {
+                      }
+                    }
+                    DEF Repere Pose {
+                      translation 0 0 -0.05
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.333333 0 0.498039
+                            }
+                          }
+                          geometry Sphere {
+                            radius 0.008
+                          }
+                        }
+                      ]
+                    }
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0 1 1
+                        }
+                      }
+                      geometry Cylinder {
+                        height 0.1
+                        radius 0.02
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "altitude base"
+            }
+          }
+          DEF AZIMUTH Pose {
+            children [
+              Shape {
+                appearance Appearance {
+                }
+                geometry Cylinder {
+                  height 0.08
+                  radius 0.01
+                }
+              }
+            ]
+          }
+        ]
+        name "azimuth_base"
+      }
+    }
+    Pose {
+      children [
+        Shape {
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.333333 0.333333 0.498039
+            }
+            texture ImageTexture {
+            }
+          }
+          geometry Cylinder {
+            height 0.025
+            radius 0.05
+          }
+        }
+      ]
+    }
+  ]
+  name "RobotTelescope"
+  controller "GoTo1"
+  supervisor TRUE
+}

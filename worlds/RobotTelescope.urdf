@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot name="C:/Users/willi/Documents/Robot Telescope/AstroBot/worlds/RobotTelescope.urdf" xmlns:xacro="http://ros.org/wiki/xacro">
+  <link name="base_link">
+  </link>
+  <link name="appearance">
+  </link>
+  <joint name="base_link_appearance_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="appearance"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <joint name="azimuth motor" type="revolute">
+    <parent link="base_link"/>
+    <child link="azimuth_base"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="50" lower="-1000" upper="1000" velocity="10"/>
+    <origin xyz="0 0 0" rpy="0 0 -0.736911"/>
+  </joint>
+  <link name="azimuth_base">
+  </link>
+  <link name="appearance_0">
+  </link>
+  <joint name="azimuth_base_appearance_0_joint" type="fixed">
+    <parent link="azimuth_base"/>
+    <child link="appearance_0"/>
+    <origin xyz="0 0 0.05" rpy="0 0 0"/>
+  </joint>
+  <joint name="altitude motor" type="continuous">
+    <parent link="azimuth_base"/>
+    <child link="altitude base"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="2" velocity="10"/>
+    <origin xyz="0.001 -0.02 0.02" rpy="0 -1.570795 0"/>
+  </joint>
+  <link name="altitude base">
+  </link>
+  <link name="appearance_1">
+  </link>
+  <joint name="altitude base_appearance_1_joint" type="fixed">
+    <parent link="altitude base"/>
+    <child link="appearance_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="appearance_2">
+  </link>
+  <joint name="altitude base_appearance_2_joint" type="fixed">
+    <parent link="altitude base"/>
+    <child link="appearance_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="camera">
+  </link>
+  <joint name="altitude base_camera_joint" type="fixed">
+    <parent link="altitude base"/>
+    <child link="camera"/>
+    <origin xyz="0 0 -0.048" rpy="1.570796 1.570793 1.570796"/>
+  </joint>
+  <link name="appearance_3">
+  </link>
+  <joint name="camera_appearance_3_joint" type="fixed">
+    <parent link="camera"/>
+    <child link="appearance_3"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="inertial unit">
+  </link>
+  <joint name="altitude base_inertial unit_joint" type="fixed">
+    <parent link="altitude base"/>
+    <child link="inertial unit"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="compass">
+  </link>
+  <joint name="azimuth_base_compass_joint" type="fixed">
+    <parent link="azimuth_base"/>
+    <child link="compass"/>
+    <origin xyz="0 0 0.04" rpy="0 0 0"/>
+  </joint>
+</robot>
