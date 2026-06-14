@@ -12,8 +12,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation -0.08537872721992226 -0.20338207423330013 0.9753697785039612 5.617538331941922
-  position -2933.2370684209764 3099.712379400613 229.32184889079883
+  orientation -0.03850226923822943 -0.9983862063681249 0.04174396001065123 5.128141769545186
+  position -0.37885700095220565 -0.12615733215144545 0.96885570653081
   follow "solid"
   followType "None"
 }
@@ -23,7 +23,6 @@ TexturedBackgroundLight {
 }
 Robot {
   translation 0.000559952 -0.129999 0.01
-  rotation 0 0 1 0.785398
   children [
     HingeJoint {
       jointParameters HingeJointParameters {
@@ -46,7 +45,6 @@ Robot {
       ]
       endPoint Solid {
         translation 0 0 0.049999999999999385
-        rotation 0 0 -1 0.7369111729578417
         children [
           Compass {
             translation 0 0 0.04
@@ -183,7 +181,7 @@ Robot {
     }
   ]
   name "RobotTelescope"
-  controller "GoTo2-cameraTrack"
+  controller "stepper_motor"
   supervisor TRUE
 }
 Robot {

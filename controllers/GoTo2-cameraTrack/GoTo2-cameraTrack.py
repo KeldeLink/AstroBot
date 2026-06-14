@@ -13,7 +13,7 @@ LOCATION = EarthLocation(lat=48.5720219, lon=7.766944, height=35*u.m)
 SENS_AZ = 1      
 SENS_ALT = -1   
 
-# --- GAINS STABILISÉS ---
+# GAINS PID 
 Kp_h, Ki_h, Kd_h = 2.0, 0.01, 0.5
 Kp_az, Ki_az, Kd_az = 1.0, 0.005, 0.2
 Kp_alt, Ki_alt, Kd_alt = 2.0, 0.01, 0.3
