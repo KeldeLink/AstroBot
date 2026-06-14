@@ -1,7 +1,7 @@
 #VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "../protos/Floor.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
 
 WorldInfo {
@@ -12,8 +12,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation -0.03850226923822943 -0.9983862063681249 0.04174396001065123 5.128141769545186
-  position -0.37885700095220565 -0.12615733215144545 0.96885570653081
+  orientation -0.025614201620597417 -0.9993473758680261 0.02547027720755284 5.619008824415751
+  position -0.800329288709502 -0.1269109315358738 0.709009573673716
   follow "solid"
   followType "None"
 }
@@ -270,7 +270,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 -0.04499999999999911 0.025
-        rotation -0.6387696224695875 0.6387695681696735 -0.4288902052861425 2.331270590752793
+        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
         children [
           USE WHEEL
         ]

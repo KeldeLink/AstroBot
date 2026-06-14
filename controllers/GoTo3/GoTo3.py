@@ -3,8 +3,9 @@ import math
 from astropy.coordinates import get_body, AltAz, EarthLocation
 from astropy.time import Time
 import astropy.units as u
+from numpy import sign
 
-ASTRE_CIBLE = "uranus" 
+ASTRE_CIBLE = "venus" 
 location = EarthLocation(lat=43.6109, lon=3.8772, height=35*u.m)
 
 # Sens des moteurs
@@ -51,14 +52,39 @@ noeud_cible = robot.getFromDef("TARGET_SPHERE")
 noeud_robot = robot.getSelf() 
 distance_visuelle = 30
 
-
 def wait_webots(ms):
     start_time = robot.getTime()
     while robot.step(timestep) != -1:
         if robot.getTime() - start_time >= ms / 1000.0:
             break
             
-          
+            
+DEG_PAR_PAS=0.9 #0.01
+current_ang=0
+
+def Step(x,motor,steps_per_rev=200):
+    global current_ang
+    current = current_ang # On met à jour la variable locale de l'angle actuel avec sa valeur globale
+    nouvelle_cible = current + x * math.pi/180*DEG_PAR_PAS # Calcule le nouvel angle en fonction du degré par pas (résolution) du moteur pas à pas
+    
+    motor.setPosition(nouvelle_cible)
+    #print("Valeur théorique : ", round(current*180/math.pi,5),"Valeur réelle : ", sensor.getValue()*180/math.pi)
+    current_ang=nouvelle_cible # On met à jour la variable globale de l'angle actuel avec sa nouvelle valeur
+
+    #print(f"Nouvelle cible : {math.degrees(nouvelle_cible):.2f}°")
+
+def StepPosition(capteur,motor, ang):
+    pos_re=math.degrees(capteur.getValue())
+    pos_re=pos_re*sign(pos_re-ang)
+    erreur=abs((pos_re-ang))
+    while (erreur>DEG_PAR_PAS):
+        pos_re=math.degrees(capteur.getValue())
+        pos_re=pos_re*sign(pos_re-ang)
+        print(f"erreur : {abs((pos_re-ang))} position réelle : {pos_re}")
+        erreur=abs((pos_re-ang))
+        Step(1*sign(pos_re-ang), motor)
+        wait_webots(5) # Remplace time.sleep()
+            
 
 print("RECHERCHE DU NORD (+X)")
 
@@ -104,9 +130,6 @@ while robot.step(pas_de_temps) != -1:
             etat = "SUIVI_ASTRE"
             print("Mode suivi")
 
-    # ==========================================
-    # PHASE 2 : SUIVI (PID avec ENCODEURS)
-    # ==========================================
     elif etat == "SUIVI_ASTRE":
         azimut_actuel = ((enc_az - offset_enc_az) * SENS_AZIMUT) % 360.0
         altitude_actuelle = (enc_alt - offset_enc_alt) * SENS_ALTITUDE
@@ -117,29 +140,15 @@ while robot.step(pas_de_temps) != -1:
             coordonnees = corps.transform_to(AltAz(obstime=maintenant, location=location))
             cible_az = coordonnees.az.deg
             cible_alt = coordonnees.alt.deg
-
-        # Calcul des erreurs de suivi
-        err_az = cible_az - azimut_actuel
-        err_alt = cible_alt - altitude_actuelle
+            
+        timestep = int(robot.getBasicTimeStep())    
+        robot.step(timestep)
+        moteur_az.setVelocity(0.5) # Vitesse du changement de pas
+        #moteur_alt.setVelocity(0.5) # Vitesse du changement de pas
         
-       
-        if err_az > 180: err_az -= 360
-        elif err_az < -180: err_az += 360
- 
-
-        # PID Azimut
-        integrales_suivi["az"] += err_az * dt
-        v_az = (Kp_az * err_az) + (Ki_az * integrales_suivi["az"]) + (Kd_az * (err_az - erreurs_prec_suivi["az"])/dt)
-        
-        # PID Altitude
-        integrales_suivi["alt"] += err_alt * dt
-        v_alt = (Kp_alt * err_alt) + (Ki_alt * integrales_suivi["alt"]) + (Kd_alt * (err_alt - erreurs_prec_suivi["alt"])/dt)
-
-        moteur_az.setVelocity(max(min(math.radians(v_az), 2.0), -2.0) * SENS_AZIMUT)
-        moteur_alt.setVelocity(max(min(math.radians(v_alt), 4), -1.5) * SENS_ALTITUDE)
-        
-        erreurs_prec_suivi["az"], erreurs_prec_suivi["alt"] = err_az, err_alt
-
+        StepPosition(capteur_az,moteur_az,cible_az)
+        #StepPosition(capteur_alt,moteur_alt,cible_alt)
+      
         # ==========================================
         # MAJ de la planète
         # ==========================================
@@ -159,9 +168,5 @@ while robot.step(pas_de_temps) != -1:
                 pos_robot[1] + y_rel,
                 pos_robot[2] + z_rel
             ])
-
-        # Affichage console
-        if robot.getTime() % 1.0 < dt:
-            print(f"[{ASTRE_CIBLE.upper()}] Cible AZ: {cible_az:.2f}° | ALT: {cible_alt:.2f}°")
-            print(f"Erreur -> AZ: {err_az:.3f}° | ALT: {err_alt:.3f}°")
-            print("-" * 20)
+            
+           
