@@ -25,7 +25,7 @@ def wait_webots(ms):
         if robot.getTime() - start_time >= ms / 1000.0:
             break
 
-DEG_PAR_PAS = 0.5
+DEG_PAR_PAS = 0.9
 
 # Dictionnaire pour stocker l'angle cible actuel de chaque moteur indépendamment
 current_ang = {
@@ -37,16 +37,18 @@ def Step(x, motor):
     """Fait avancer le moteur donné d'un certain nombre de pas (x)."""
     global current_ang
     current = current_ang[motor]
+    motor.setVelocity(100)
     
     # Calcule le nouvel angle en radians
     nouvelle_cible = current + x * (math.pi / 180.0) * DEG_PAR_PAS
     
     motor.setPosition(nouvelle_cible)
     current_ang[motor] = nouvelle_cible # Mise à jour locale pour ce moteur spécifique
-
+    motor.setVelocity(0)
+    
 def StepPosition(motor, ang_cible):
     """Atteint l'angle cible en comptant strictement le nombre de pas nécessaires (boucle ouverte)."""
-    motor.setVelocity(1)
+    motor.setVelocity(100)
     
     # 1. On récupère la position actuelle estimée en degrés
     pos_actuelle_deg = -math.degrees(current_ang[motor])
@@ -78,13 +80,23 @@ def StepPosition(motor, ang_cible):
 robot.step(timestep)
 i = 0
 
+motor_az.setVelocity(1.0)
+
+# 2. On exécute l'action de préparation
+Step(50, motor_az) 
+
+# 3. ON ATTEND que le robot ait le temps de faire le mouvement 
+#    avant que la boucle while ne commence
+wait_webots(2000)
+
 
 while robot.step(timestep) != -1:
-    print(f"--- Mouvement vers l'Azimut {i}° ---")
+    #print(f"--- Mouvement vers l'Azimut {i}° ---")
     
     # Plus besoin de passer le capteur en argument
-    StepPosition(motor_az, i)
-    StepPosition(motor_alt, i)
+    #StepPosition(motor_az, i)
+    StepPosition(motor_az, 90)
+    #Step(100,motor_alt) 
     i = i + 45
     wait_webots(1000)
 

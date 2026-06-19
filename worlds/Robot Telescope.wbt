@@ -12,8 +12,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation -0.025614201620597417 -0.9993473758680261 0.02547027720755284 5.619008824415751
-  position -0.800329288709502 -0.1269109315358738 0.709009573673716
+  orientation 0.2056342985746222 -0.2725089697837818 -0.939922016253 4.881264999879636
+  position -0.10415977443277238 -0.5449080266217728 0.2665599124337688
   follow "solid"
   followType "None"
 }
@@ -67,6 +67,7 @@ Robot {
                 name "altitude motor"
                 acceleration 50
                 controlPID 20 0 0
+                maxVelocity 100
                 maxTorque 2
               }
             ]
@@ -180,7 +181,7 @@ Robot {
     }
   ]
   name "RobotTelescope"
-  controller "stepper_control"
+  controller "GoTo3"
   supervisor TRUE
 }
 Robot {
