@@ -1,65 +1,62 @@
-from controller import Robot
 import math
 from numpy import sign
 
-robot = Robot()
-timestep = int(robot.getBasicTimeStep())
+DEG_PAR_PAS = 0.01
 
-motor_az = robot.getDevice("azimuth motor")
-sensor_az = robot.getDevice("azimuth sensor")
-motor_alt = robot.getDevice("altitude motor")
-sensor_alt = robot.getDevice("altitude sensor")
+# Dictionnaire global pour suivre la position théorique (en radians)
+current_ang = {
+    "az": 0.0,
+    "alt": 0.0
+}
 
-for m in [motor_az, motor_alt]:
-    m.setPosition(float('inf'))
-    m.setVelocity(0.0)
-
-for s in [sensor_az, sensor_alt]:
-    s.enable(timestep)
-
-# Petite fonction pour attendre proprement dans Webots
-def wait_webots(ms):
-    start_time = robot.getTime()
-    while robot.step(timestep) != -1:
-        if robot.getTime() - start_time >= ms / 1000.0:
-            break
-            
-            
-DEG_PAR_PAS=0.9 #0.01
-current_ang_az=0
-current_ang_alt=0
-
-def Step(x,motor,steps_per_rev=200):
-    global current_ang_az
-    current_ang=current_ang_az
-    current = current_ang # On met à jour la variable locale de l'angle actuel avec sa valeur globale
-    nouvelle_cible = current + x * math.pi/180*DEG_PAR_PAS # Calcule le nouvel angle en fonction du degré par pas (résolution) du moteur pas à pas
+def Step(x, motor, motor_key):
+    """Fait avancer le moteur donné d'un certain nombre de pas (x)."""
+    global current_ang
+    current = current_ang[motor_key]
+    
+    # Calcule le nouvel angle en radians
+    nouvelle_cible = current + x * (math.pi / 180.0) * DEG_PAR_PAS
     
     motor.setPosition(nouvelle_cible)
-    #print("Valeur théorique : ", round(current*180/math.pi,5),"Valeur réelle : ", sensor.getValue()*180/math.pi)
-    current_ang=nouvelle_cible # On met à jour la variable globale de l'angle actuel avec sa nouvelle valeur
+    current_ang[motor_key] = nouvelle_cible # Mise à jour de la mémoire du moteur
 
-    #print(f"Nouvelle cible : {math.degrees(nouvelle_cible):.2f}°")
-
-def StepPosition(capteur,motor, ang):
-    pos_re=math.degrees(capteur.getValue())
-    pos_re=pos_re*sign(pos_re-ang)
-    erreur=abs((pos_re-ang))
-    while (erreur>0.5):
-        pos_re=math.degrees(capteur.getValue())
-        pos_re=pos_re*sign(pos_re-ang)
-        print(f"erreur : {abs((pos_re-ang))} position réelle : {pos_re}")
-        erreur=abs((pos_re-ang))
-        Step(1*sign(pos_re-ang), motor)
-        wait_webots(5) # Remplace time.sleep()
+def StepPosition(motor, motor_key, ang_cible, robot, timestep):
+    """Atteint l'angle cible par le chemin le plus court."""
+    motor.setVelocity(1000)
     
+    # 1. Récupère la position actuelle estimée en degrés
+    pos_actuelle_deg = -math.degrees(current_ang[motor_key])
     
-# Initialisation
-robot.step(timestep)
-motor_az.setVelocity(0.5) # Vitesse du changement de pas
+    # --- OPTIMISATION DU CHEMIN LE PLUS COURT ---
+    # Différence brute entre la cible et la position
+    diff_brute = ang_cible - pos_actuelle_deg
+    
+    # On force l'erreur à se situer entre -180° et +180°
+    # Ex: Si diff_brute = 270°, (270+180)%360 - 180 = -90° (tourne à gauche)
+    erreur_deg = (diff_brute + 180) % 360 - 180
+    # --------------------------------------------
+    
+    # 2. Calcule le nombre exact de pas entiers à effectuer
+    nb_pas = int(round(erreur_deg / DEG_PAR_PAS,5))
+    
+    if nb_pas == 0:
+        print(f"[{motor_key.upper()}] Cible déjà atteinte ou trop proche. (Position : {pos_actuelle_deg:.2f}°)\n")
+        motor.setVelocity(0.0)
+        return
 
-while robot.step(timestep) != -1:
-    #StepPosition(sensor_az,motor_az,45)
-    Step(50,motor_az)
-    Step(50,motor_alt)
-    wait_webots(2500)
+    print(f"[{motor_key.upper()}] Chemin optimisé : {abs(nb_pas)} pas requis pour faire {erreur_deg:.2f}° (Pos: {pos_actuelle_deg:.2f}° -> Cible: {ang_cible}°)")
+    
+    direction = -sign(nb_pas)
+    
+    # 3. Effectue les pas un par un
+    for _ in range(abs(nb_pas)):
+        Step(direction, motor, motor_key)
+        print(f"[{motor_key.upper()}] | Nouvelle position : {-math.degrees(current_ang[motor_key]):.2f}°\n")
+        print(current_ang["az"])
+        # On n'attend qu'un seul "step" physique de Webots pour aller au plus vite
+        start_time = robot.getTime()
+        while robot.step(timestep) != -1:
+            break
+        
+    
+    motor.setVelocity(0.0)

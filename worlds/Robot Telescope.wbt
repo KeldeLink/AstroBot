@@ -31,13 +31,12 @@ Robot {
       device [
         PositionSensor {
           name "azimuth sensor"
-          noise 0.00087266
-          resolution 0.00087266
         }
         RotationalMotor {
           name "azimuth motor"
-          acceleration 50
+          acceleration 500
           controlPID 10 0 0.1
+          maxVelocity 1000
           minPosition -1000
           maxPosition 1000
           maxTorque 50
@@ -181,7 +180,7 @@ Robot {
     }
   ]
   name "RobotTelescope"
-  controller "stepper_motor"
+  controller "stepper_control"
   supervisor TRUE
 }
 Robot {
@@ -270,7 +269,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 -0.04499999999999911 0.025
-        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
+        rotation -0.6387696224695875 0.6387695681696735 -0.4288902052861425 2.331270590752793
         children [
           USE WHEEL
         ]

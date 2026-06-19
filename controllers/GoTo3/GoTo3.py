@@ -4,8 +4,12 @@ from astropy.coordinates import get_body, AltAz, EarthLocation
 from astropy.time import Time
 import astropy.units as u
 from numpy import sign
+import sys
+# Ajoute le chemin du dossier si nécessaire
+sys.path.append(r'C:\Users\willi\Documents\Robot Telescope\AstroBot\controllers\stepper_motor') 
+from stepper_motor import StepPosition, Step, current_ang
 
-ASTRE_CIBLE = "venus" 
+ASTRE_CIBLE = "moon" 
 location = EarthLocation(lat=43.6109, lon=3.8772, height=35*u.m)
 
 # Sens des moteurs
@@ -22,6 +26,7 @@ Kp_alt, Ki_alt, Kd_alt = 8, 0.02, 0.2
 # ==========================================
 robot = Supervisor()
 pas_de_temps = int(robot.getBasicTimeStep())
+timestep = int(robot.getBasicTimeStep())
 
 moteur_az = robot.getDevice("azimuth motor")
 moteur_alt = robot.getDevice("altitude motor")
@@ -51,40 +56,8 @@ erreurs_prec_suivi = {"az": 0, "alt": 0}
 noeud_cible = robot.getFromDef("TARGET_SPHERE")
 noeud_robot = robot.getSelf() 
 distance_visuelle = 30
-
-def wait_webots(ms):
-    start_time = robot.getTime()
-    while robot.step(timestep) != -1:
-        if robot.getTime() - start_time >= ms / 1000.0:
-            break
-            
-            
-DEG_PAR_PAS=0.9 #0.01
-current_ang=0
-
-def Step(x,motor,steps_per_rev=200):
-    global current_ang
-    current = current_ang # On met à jour la variable locale de l'angle actuel avec sa valeur globale
-    nouvelle_cible = current + x * math.pi/180*DEG_PAR_PAS # Calcule le nouvel angle en fonction du degré par pas (résolution) du moteur pas à pas
-    
-    motor.setPosition(nouvelle_cible)
-    #print("Valeur théorique : ", round(current*180/math.pi,5),"Valeur réelle : ", sensor.getValue()*180/math.pi)
-    current_ang=nouvelle_cible # On met à jour la variable globale de l'angle actuel avec sa nouvelle valeur
-
-    #print(f"Nouvelle cible : {math.degrees(nouvelle_cible):.2f}°")
-
-def StepPosition(capteur,motor, ang):
-    pos_re=math.degrees(capteur.getValue())
-    pos_re=pos_re*sign(pos_re-ang)
-    erreur=abs((pos_re-ang))
-    while (erreur>DEG_PAR_PAS):
-        pos_re=math.degrees(capteur.getValue())
-        pos_re=pos_re*sign(pos_re-ang)
-        print(f"erreur : {abs((pos_re-ang))} position réelle : {pos_re}")
-        erreur=abs((pos_re-ang))
-        Step(1*sign(pos_re-ang), motor)
-        wait_webots(5) # Remplace time.sleep()
-            
+        
+robot.step(timestep)        
 
 print("RECHERCHE DU NORD (+X)")
 
@@ -141,12 +114,12 @@ while robot.step(pas_de_temps) != -1:
             cible_az = coordonnees.az.deg
             cible_alt = coordonnees.alt.deg
             
-        timestep = int(robot.getBasicTimeStep())    
-        robot.step(timestep)
-        moteur_az.setVelocity(0.5) # Vitesse du changement de pas
+
+
         #moteur_alt.setVelocity(0.5) # Vitesse du changement de pas
-        
-        StepPosition(capteur_az,moteur_az,cible_az)
+       
+        #StepPosition(motor_az, cible_az)
+        StepPosition(moteur_az, "az", cible_az, robot, timestep)
         #StepPosition(capteur_alt,moteur_alt,cible_alt)
       
         # ==========================================
