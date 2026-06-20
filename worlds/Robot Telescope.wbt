@@ -12,8 +12,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation 0.14056860867450222 0.3891708581040644 -0.9103771248542337 0.6729246537961554
-  position -0.22442021309932633 0.03549591916820541 0.1136805521712573
+  orientation -0.08742971065146947 -0.004880089126294864 0.9961587375642096 3.3720648101383017
+  position 0.6755778688201461 0.11892390501985815 0.16620649671121418
   follow "solid"
   followType "None"
 }
@@ -24,6 +24,33 @@ TexturedBackgroundLight {
 Robot {
   translation 0.000559952 -0.129999 0.01
   children [
+    LED {
+      translation 0 0.03 0.01
+      children [
+        Group {
+          children [
+            PointLight {
+              attenuation 0 0 1
+              color 0.003921568859368563 0 0
+              intensity 25
+              location 0 0 0.03
+              on FALSE
+              castShadows TRUE
+            }
+            Shape {
+              appearance PBRAppearance {
+                roughness 1
+              }
+              geometry Cylinder {
+                height 0.007
+                radius 0.00096
+              }
+            }
+          ]
+        }
+      ]
+      gradual TRUE
+    }
     HingeJoint {
       jointParameters HingeJointParameters {
         axis 0 0 1
@@ -45,27 +72,6 @@ Robot {
       endPoint Solid {
         translation 0 0 0.049999999999999385
         children [
-          DEF LED Solid {
-            translation 0 0.02 -0.037
-            children [
-              Shape {
-                appearance Appearance {
-                }
-                geometry Cylinder {
-                  height 0.001
-                  radius 0.005
-                }
-              }
-              LED {
-                translation 0 0 0.01
-                immersionProperties [
-                  ImmersionProperties {
-                  }
-                ]
-              }
-            ]
-            description "LED"
-          }
           Compass {
             translation 0 0 0.04
             rotation 0 1 0 0
@@ -398,7 +404,7 @@ DEF ciel_etoile Transform {
         emissiveColor 1 1 1
         emissiveColorMap ImageTexture {
           url [
-            "../textures/2010076265_Pelicanv6.jpg.3d86198b9ad90a168290ae5c9033dd7d.jpg"
+            "../textures/captivating-4k-starry-sky-3y00g5l9tn69z0wa.jpg"
           ]
         }
       }
