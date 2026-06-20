@@ -9,7 +9,7 @@ import sys
 sys.path.append(r'C:\Users\willi\Documents\Robot Telescope\AstroBot\controllers\stepper_motor') 
 from stepper_motor import StepPosition, Step, current_ang
 
-ASTRE_CIBLE = "moon" 
+ASTRE_CIBLE = "sun" 
 location = EarthLocation(lat=43.6109, lon=3.8772, height=35*u.m)
 
 # Sens des moteurs
@@ -33,6 +33,9 @@ moteur_alt = robot.getDevice("altitude motor")
 capteur_az = robot.getDevice("azimuth sensor")
 capteur_alt = robot.getDevice("altitude sensor")
 IMU = robot.getDevice("inertial unit")
+led = robot.getDevice("led")
+
+led.set(1)
 
 for m in [moteur_az, moteur_alt]:
     m.setPosition(float('inf'))
@@ -120,6 +123,7 @@ while robot.step(pas_de_temps) != -1:
        
         #StepPosition(motor_az, cible_az)
         StepPosition(moteur_az, "az", cible_az, robot, timestep)
+        StepPosition(moteur_alt, "alt", cible_alt, robot, timestep)
         #StepPosition(capteur_alt,moteur_alt,cible_alt)
       
         # ==========================================

@@ -7,7 +7,7 @@ centralWidgetVisible: 1
 projectionMode: PERSPECTIVE
 renderingMode: PLAIN
 orthographicViewHeight: 1
-textFiles: 1 "controllers/camera/camera.py" "controllers/stepper_motor/stepper_motor.py" "controllers/GoTo3/GoTo3.py" "controllers/stepper_control/stepper_control.py"
+textFiles: 2 "controllers/camera/camera.py" "controllers/stepper_motor/stepper_motor.py" "controllers/GoTo3/GoTo3.py" "controllers/stepper_control/stepper_control.py"
 globalOptionalRendering: JointAxes::CoordinateSystem::CameraFrustums
 consoles: Console:All:All
 renderingDevicePerspectives: RobotTelescope:camera;1;0.0861037;0.00258398;0

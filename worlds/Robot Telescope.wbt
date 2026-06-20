@@ -12,8 +12,8 @@ WorldInfo {
   gpsCoordinateSystem "WGS84"
 }
 Viewpoint {
-  orientation 0.2056342985746222 -0.2725089697837818 -0.939922016253 4.881264999879636
-  position -0.10415977443277238 -0.5449080266217728 0.2665599124337688
+  orientation 0.14056860867450222 0.3891708581040644 -0.9103771248542337 0.6729246537961554
+  position -0.22442021309932633 0.03549591916820541 0.1136805521712573
   follow "solid"
   followType "None"
 }
@@ -45,6 +45,27 @@ Robot {
       endPoint Solid {
         translation 0 0 0.049999999999999385
         children [
+          DEF LED Solid {
+            translation 0 0.02 -0.037
+            children [
+              Shape {
+                appearance Appearance {
+                }
+                geometry Cylinder {
+                  height 0.001
+                  radius 0.005
+                }
+              }
+              LED {
+                translation 0 0 0.01
+                immersionProperties [
+                  ImmersionProperties {
+                  }
+                ]
+              }
+            ]
+            description "LED"
+          }
           Compass {
             translation 0 0 0.04
             rotation 0 1 0 0
@@ -54,7 +75,7 @@ Robot {
             jointParameters HingeJointParameters {
               position -0.8587642142288768
               axis 0 1 0
-              anchor 0.001 -0.02 0.02
+              anchor 0 -0.02 0.03
               suspensionAxis 0 1 0
             }
             device [
@@ -72,8 +93,8 @@ Robot {
               }
             ]
             endPoint Solid {
-              translation 0.001 -0.02 0.02
-              rotation 0 -0.9999999999999999 0 1.570795307179585
+              translation 0 -0.02 0.03
+              rotation 0 1 0 0
               children [
                 InertialUnit {
                   noise 0.0001
@@ -270,7 +291,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 -0.04499999999999911 0.025
-        rotation -0.6387696224695875 0.6387695681696735 -0.4288902052861425 2.331270590752793
+        rotation -0.6387696224695876 0.6387695681696736 -0.4288902052861426 2.331270590752793
         children [
           USE WHEEL
         ]
